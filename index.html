@@ -22,7 +22,7 @@
   --w-regular: 400; --w-head: 500; --w-num: 600;
   --pad: 18px; --pad-sm: 11px; --gap: 14px; --gap-sm: 8px;
   --r: 16px; --r-sm: 10px; --r-pill: 999px;
-  --ctl-h: 34px; --row-h: 44px; --maxw: 1360px; --read: 820px;
+  --ctl-h: 34px; --row-h: 44px; --read: 820px;
 }
 
 /* Синий · Классика (dark) */
@@ -2681,6 +2681,7 @@ html[data-tone="colored"] { --rl: 84%; --rs: 80%; }
 
 * { box-sizing: border-box; }
 html, body { margin: 0; }
+html { scrollbar-gutter: stable; }
 body { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: var(--t-base); line-height: var(--lh); -webkit-font-smoothing: antialiased; }
 body.lock { overflow: hidden; }
 button, input, select, textarea { font: inherit; color: inherit; }
@@ -2718,19 +2719,26 @@ select.inp { cursor: pointer; }
 
 /* Шапка */
 .hdr { position: sticky; top: 0; z-index: 20; background: var(--bg); }
-.hdr-in { max-width: var(--maxw); margin: 0 auto; padding: var(--pad-sm) var(--pad); display: flex; align-items: center; gap: var(--gap-sm); flex-wrap: wrap; }
+.hdr-in { padding: var(--pad-sm) var(--pad); display: flex; align-items: center; gap: var(--gap-sm); flex-wrap: wrap; }
 .search { position: relative; width: 260px; }
 .search svg { position: absolute; left: 11px; top: 9px; color: var(--faint); }
 .search .inp { padding-left: 38px; }
-.spacer { flex: 1; }
+.htags { flex: 1 1 0; min-width: 0; display: flex; justify-content: center; align-items: center; gap: 12px; margin-top: 6px; }
+.hblk { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 5px; border-radius: var(--r); background: color-mix(in oklab, var(--field) 45%, transparent); flex: none; }
+.hrow { display: flex; justify-content: center; gap: 6px; }
+.hrow .fb { flex: none; }
 .theme-tile { width: var(--ctl-h); height: var(--ctl-h); border-radius: var(--r-sm); border: 0; padding: 0; cursor: pointer; overflow: hidden; display: flex; box-shadow: 0 0 0 1px var(--line); flex: none; }
 .theme-tile span, .sw span { flex: 1; }
 
-main { max-width: var(--maxw); margin: 0 auto; padding: 4px var(--pad) 28px; }
+main { padding: 4px var(--pad) 28px; }
 
 /* Панель фильтров-кнопок справа */
 main { display: grid; grid-template-columns: minmax(0, 1fr) 230px; gap: var(--gap); align-items: start; }
 .facets { position: sticky; top: calc(var(--hdr-h, 58px) + 4px); max-height: calc(100vh - var(--hdr-h, 58px) - 16px); overflow-y: auto; overscroll-behavior: contain; padding-right: 2px; }
+.facets::-webkit-scrollbar { width: 6px; }
+.facets::-webkit-scrollbar-track { background: transparent; }
+.facets::-webkit-scrollbar-thumb { background: color-mix(in oklab, var(--text) 22%, transparent); border-radius: 3px; }
+@supports not selector(::-webkit-scrollbar) { .facets { scrollbar-width: thin; } }
 .fhead { display: flex; align-items: center; gap: 8px; min-height: 28px; margin-bottom: 6px; }
 .fhead .found { font-weight: 500; flex: 1; }
 .fclose, .facet-btn { display: none; }
@@ -2739,11 +2747,13 @@ main { display: grid; grid-template-columns: minmax(0, 1fr) 230px; gap: var(--ga
 .fbtns { display: flex; flex-wrap: wrap; gap: 6px; }
 .fb { height: 28px; max-width: 100%; padding: 0 6px 0 11px; border: 0; border-radius: var(--r-pill); background: var(--field); color: var(--text); font-size: var(--t-sm); display: inline-flex; align-items: center; gap: 6px; cursor: pointer; transition: background .15s ease-out, color .15s ease-out; }
 .fb .ft { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.fb .fn { min-width: 20px; height: 20px; padding: 0 5px; border-radius: var(--r-pill); background: var(--surf); color: var(--muted); font-size: var(--t-xs); font-variant-numeric: tabular-nums; display: inline-grid; place-items: center; flex: none; }
+.fb .fn { min-width: calc(3ch + 10px); height: 20px; padding: 0 5px; border-radius: var(--r-pill); background: var(--surf); color: var(--muted); font-size: var(--t-xs); font-variant-numeric: tabular-nums; line-height: 20px; text-align: right; display: inline-block; flex: none; }
 .fb:hover { background: var(--sel); }
 .fb.on { background: var(--accent); color: var(--on-accent); }
 .fb.on .fn { background: color-mix(in oklab, var(--on-accent) 22%, transparent); color: var(--on-accent); }
-.fb.zero:not(.on) { opacity: .45; }
+.fb.ex { background: var(--danger); color: var(--bg); }
+.fb.ex .fn { background: color-mix(in oklab, var(--bg) 22%, transparent); color: var(--bg); }
+.fb.zero:not(.on):not(.ex) { opacity: .45; }
 
 /* Плитки */
 .grid { display: grid; gap: var(--gap); grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); }
@@ -2753,6 +2763,8 @@ main { display: grid; grid-template-columns: minmax(0, 1fr) 230px; gap: var(--ga
 .tile .img { aspect-ratio: 2 / 3; background: var(--field); position: relative; overflow: hidden; }
 .grid.h .tile .img { aspect-ratio: 460 / 215; }
 .img img, .icon img, .thumb img, .pmain img, .pth img, .pe img, .cov img { width: 100%; height: 100%; object-fit: cover; display: block; }
+img.fit { object-fit: contain; position: relative; }
+img.imgbg { position: absolute; inset: 0; filter: blur(20px) brightness(.55); transform: scale(1.1); pointer-events: none; }
 .tile .tname { background: var(--field); padding: 7px 11px; font-weight: 500; line-height: var(--lh-tight); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tile .ov { left: 6px; right: 6px; bottom: 6px; gap: 6px; pointer-events: none; }
 .tile .pill { height: 20px; padding: 0 8px; font-size: var(--t-xs); }
@@ -2818,16 +2830,30 @@ td.mut, td.gen { color: var(--muted); }
 .cname-in::placeholder { color: var(--faint); }
 .cname.ed { box-shadow: inset 0 0 0 1.5px var(--accent); }
 .cname.bad { box-shadow: inset 0 0 0 1.5px var(--danger); }
-.icon { aspect-ratio: 2 / 3; border-radius: 0 0 var(--r-sm) var(--r-sm); overflow: hidden; position: relative; background: var(--field); }
+.icon:not(.btn) { aspect-ratio: 2 / 3; border-radius: 0 0 var(--r-sm) var(--r-sm); overflow: hidden; position: relative; background: var(--field); }
 .icon .hatch { position: absolute; inset: 0; background: repeating-linear-gradient(135deg, var(--hatch) 0 5px, transparent 5px 10px); }
 .ov { position: absolute; left: 8px; right: 8px; bottom: 8px; display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; z-index: 1; }
 .ovst { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; min-width: 0; }
 .pill { height: 24px; max-width: 100%; padding: 0 9px; border: 0; border-radius: var(--r-pill); background: color-mix(in oklab, var(--bg) 84%, transparent); color: var(--text); font-size: var(--t-sm); font-weight: 500; display: inline-flex; align-items: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .pill.my { color: var(--accent); }
 .ovrate { height: 36px; min-width: 36px; padding: 0 9px; border: 0; border-radius: var(--r-sm); background: color-mix(in oklab, var(--bg) 84%, transparent); display: inline-grid; place-items: center; font-size: var(--t-xl); flex: none; }
-select.pill, select.ovrate { appearance: none; -webkit-appearance: none; cursor: pointer; outline: none; box-shadow: inset 0 0 0 1.5px var(--accent); font-family: inherit; }
-select.ovrate { font-weight: var(--w-num); text-align: center; text-align-last: center; }
-select.pill option, select.ovrate option { background: var(--surf); color: var(--text); font-size: var(--t-base); }
+/* Выпадашки поверх картинки: капсула-кнопка + своё меню */
+.dd { cursor: pointer; font-family: inherit; gap: 4px; }
+.pill.dd { padding-right: 6px; box-shadow: inset 0 0 0 1.5px color-mix(in oklab, var(--accent) 55%, transparent); }
+.pill.dd:hover { box-shadow: inset 0 0 0 1.5px var(--accent); }
+.pill.dd.empty { color: var(--muted); }
+.pill.dd svg { width: 14px; height: 14px; flex: none; }
+.ovrate.dd:hover { box-shadow: inset 0 0 0 1.5px var(--accent); }
+.ddpop { position: fixed; z-index: 80; min-width: 200px; background: var(--surf); border-radius: var(--r); padding: 6px; box-shadow: var(--pop-shadow); display: flex; flex-direction: column; gap: 2px; animation: fade .12s ease-out; }
+.ddi { height: 38px; padding: 0 12px; border: 0; border-radius: var(--r-sm); background: transparent; color: var(--text); font-size: var(--t-base); text-align: left; cursor: pointer; }
+.ddi:hover { background: var(--field); }
+.ddi.on { background: var(--sel); font-weight: 500; }
+.ddpop.rate { min-width: 0; padding: 10px; gap: 8px; }
+.ddgrid { display: grid; grid-template-columns: repeat(5, 40px); gap: 8px; }
+.ddr { width: 40px; height: 40px; border-radius: 50%; border: 0; background: color-mix(in oklab, var(--c) 18%, transparent); color: var(--c); font-size: var(--t-lg); font-weight: var(--w-num); font-variant-numeric: tabular-nums; cursor: pointer; }
+.ddr:hover { box-shadow: inset 0 0 0 1.5px var(--c); }
+.ddr.on { background: var(--c); color: var(--bg); }
+.ddpop.rate .ddi { text-align: center; }
 .row { display: flex; flex-wrap: wrap; gap: 6px; }
 .sec { margin-top: 18px; }
 .shead { display: flex; align-items: center; gap: 8px; min-height: 24px; margin-bottom: 8px; }
@@ -2837,6 +2863,8 @@ select.pill option, select.ovrate option { background: var(--surf); color: var(-
 .none { color: var(--faint); }
 .fl { height: 26px; padding: 0 10px; border-radius: var(--r-pill); font-size: var(--t-sm); color: var(--faint); background: transparent; box-shadow: inset 0 0 0 1px var(--line); border: 0; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
 .fl.on { background: var(--sel); color: var(--text); box-shadow: none; }
+.fl .star { margin-left: 2px; font-size: 13px; line-height: 1; opacity: .6; cursor: pointer; }
+.fl .star:hover, .fl .star.on { opacity: 1; }
 button.fl { cursor: pointer; transition: background .15s ease-out, color .15s ease-out; }
 button.fl:hover { color: var(--text); box-shadow: inset 0 0 0 1px var(--accent); }
 button.fl.on, button.fl.on:hover { background: var(--accent); color: var(--on-accent); box-shadow: none; }
@@ -2874,6 +2902,11 @@ button.fl.on, button.fl.on:hover { background: var(--accent); color: var(--on-ac
 .lbst img.zoomed { cursor: grab; }
 .lbst img.dragging { cursor: grabbing; }
 .lbx { position: absolute; top: 14px; right: 14px; z-index: 1; }
+.lbnav { position: absolute; top: 50%; transform: translateY(-50%); z-index: 1; width: 44px; height: 44px; border-radius: 50%; }
+.lbnav.prev { left: 14px; }
+.lbnav.next { right: 14px; }
+.lbnav.next svg { transform: scaleX(-1); }
+.lbn { color: var(--muted); font-variant-numeric: tabular-nums; margin-left: 6px; }
 .lbbar { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); height: 44px; padding: 0 18px; border-radius: var(--r-pill); background: var(--surf); box-shadow: var(--pop-shadow); display: flex; align-items: center; gap: 11px; font-size: var(--t-sm); color: var(--muted); white-space: nowrap; }
 .lbbar input { width: 220px; accent-color: var(--accent); }
 .lbbar b { color: var(--text); font-weight: 600; min-width: 44px; text-align: right; font-variant-numeric: tabular-nums; }
@@ -2888,11 +2921,19 @@ button.fl.on, button.fl.on:hover { background: var(--accent); color: var(--on-ac
 .login .btn { width: 100%; }
 
 /* Тост */
+.upb { position: absolute; top: 6px; left: 6px; z-index: 2; height: 20px; padding: 0 7px; border-radius: var(--r-pill); background: color-mix(in oklab, var(--bg) 84%, transparent); color: var(--text); font-size: var(--t-xs); display: inline-flex; align-items: center; pointer-events: none; white-space: nowrap; }
+.upb.bad { color: var(--danger); }
+.thumb .upb { top: 2px; left: 2px; height: 14px; padding: 0 4px; font-size: 9px; }
+.upq { position: fixed; left: 12px; bottom: 12px; z-index: 94; font-size: var(--t-xs); color: var(--muted); background: color-mix(in oklab, var(--surf) 90%, transparent); border-radius: var(--r-pill); padding: 4px 10px; pointer-events: none; }
+.toast.act { display: flex; align-items: center; gap: 10px; max-width: calc(100vw - 24px); }
 .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); background: var(--sel); color: var(--text); border-radius: var(--r-sm); padding: 10px 14px; z-index: 95; box-shadow: var(--pop-shadow); animation: fade .15s ease-out; }
 
 /* Телефон */
 @media (max-width: 900px) {
   .search { flex: 1; min-width: 160px; width: auto; }
+  .htags { order: 20; flex: 1 1 100%; justify-content: flex-start; overflow-x: auto; scrollbar-width: none; }
+  .hrow { justify-content: flex-start; max-width: none; }
+  .htags::-webkit-scrollbar { display: none; }
   main { grid-template-columns: minmax(0, 1fr); }
   .facet-btn, .fclose { display: inline-flex; }
   .facets { display: none; position: fixed; top: 0; right: 0; bottom: 0; width: min(300px, 88vw); max-height: none; z-index: 40; background: var(--surf); padding: 14px; box-shadow: var(--pop-shadow); }
@@ -2932,21 +2973,19 @@ button.fl.on, button.fl.on:hover { background: var(--accent); color: var(--on-ac
 
 <div id="app" hidden>
   <header class="hdr"><div class="hdr-in">
+    <div class="htags" id="htags"></div>
     <div class="seg" id="viewSeg">
       <button data-view="tiles">Плитки</button>
       <button data-view="table">Таблица</button>
     </div>
     <label class="search"><svg class="i s" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input class="inp" id="q" type="search" placeholder="Поиск по названию"></label>
-    <div class="spacer"></div>
     <div class="seg" id="shapeSeg" title="Форма плитки">
       <button data-shape="v" title="Вертикальная 2:3"><svg class="i s" viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2"/></svg></button>
       <button data-shape="h" title="Горизонтальная"><svg class="i s" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="10" rx="2"/></svg></button>
     </div>
     <button class="btn facet-btn" id="facetBtn" title="Фильтры"></button>
     <button class="theme-tile" id="themeBtn" title="Тема"><span></span><span></span></button>
-    <button class="btn primary icon" id="addBtn" title="Добавить игру"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
-    <button class="btn" id="logoutBtn" title="Выйти из аккаунта">Выйти</button>
-  </div></header>
+    <button class="btn primary icon" id="addBtn" title="Добавить игру"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>  </div></header>
   <main>
     <div id="list"></div>
     <aside class="facets" id="facets"></aside>
@@ -2954,31 +2993,74 @@ button.fl.on, button.fl.on:hover { background: var(--accent); color: var(--on-ac
 </div>
 
 <div id="modalRoot"></div>
+<div id="upq" class="upq" hidden></div>
 
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 /* ================= Константы (правятся здесь) ================= */
-// Группы галочек: «Общее» — свойства игры (как жанры), «Личное» — мои ощущения. Порядок групп = порядок в таблице и окне.
-const FLAG_GROUPS = ['Общее', 'Личное'];
+// Группы галочек: «Общее» — свойства игры (как жанры), «Статус» — мои ощущения. Порядок групп = порядок в таблице и окне.
+const FLAG_GROUPS = ['Общее', 'Статус'];
 const FLAGS = [
   { k: 'single',    group: 'Общее',  name: 'Одиночная',            short: 'Одиноч.' },
-  { k: 'multi',     group: 'Общее',  name: 'Мультиплеер',          short: 'Мульт.' },
-  { k: 'coop',      group: 'Общее',  name: 'Кооператив',           short: 'Кооп.' },
+  { k: 'multi',     group: 'Общее',  name: 'Кооп',                 short: 'Кооп' }, // в данных — multi (мультиплеер / кооп)
   { k: 'sandbox',   group: 'Общее',  name: 'Песочница / стройка',  short: 'Песоч.' },
   { k: 'free',      group: 'Общее',  name: 'Бесплатная',           short: 'Беспл.' },
-  { k: 'cozy',      group: 'Общее',  name: 'Уютная',               short: 'Уютн.' },
-  { k: 'liked',     group: 'Личное', name: 'Понравилась',          short: 'Нрав.' },
-  { k: 'recommend', group: 'Личное', name: 'Советую',              short: 'Совет.' },
-  { k: 'fav',       group: 'Личное', name: 'Любимая',              short: 'Любим.' },
-  { k: 'replay',    group: 'Личное', name: 'Вернусь / перепройду', short: 'Вернусь' },
-  { k: 'story',     group: 'Личное', name: 'Сюжет цепляет',        short: 'Сюжет' },
-  { k: 'friends',   group: 'Личное', name: 'Играл с друзьями',     short: 'С друз.' },
+  { k: 'want',      group: 'Статус', name: 'Хочу поиграть',        short: 'Хочу' },
+  { k: 'done',      group: 'Статус', name: 'Прошёл',               short: 'Прошёл' },
+  { k: 'demo',      group: 'Статус', name: 'Пробовал демо',        short: 'Демо' },
+  { k: 'liked',     group: 'Статус', name: 'Понравилась',          short: 'Нрав.' },
+  { k: 'mid',       group: 'Статус', name: 'Средне',               short: 'Средне' },
+  { k: 'disliked',  group: 'Статус', name: 'Не понравилась',       short: 'Не нрав.' },
+  { k: 'nope',  group: 'Статус', name: 'Неинтересно',       short: 'Неинт.' },
+  { k: 'flop',      group: 'Статус', name: 'Не пошла',             short: 'Не пошла' },
+  { k: 'friends',   group: 'Статус', name: 'Играл с друзьями',     short: 'С друз.' },
+  { k: 'cozy',      group: 'Статус', name: 'Уютная',               short: 'Уютн.' },
+  { k: 'yura',      group: 'Статус', name: 'Пойдёт у Юры',         short: 'Юра' },
 ].sort((a, b) => FLAG_GROUPS.indexOf(a.group) - FLAG_GROUPS.indexOf(b.group));
-const GAME_STATUSES = ['Вышла', 'Ранний доступ', 'Только демо', 'Не вышла', 'Закрыта'];
-const MY_STATUSES = ['В планах', 'Жду выхода', 'Играю', 'На паузе', 'Прошёл', 'Прошёл на 100 %', 'Пробовал демо', 'Прошёл демо', 'Бросил', 'Не буду'];
-// Снятые статусы из старых данных показываются как замена
-const NO_STATUS = '—'; // пустой «Мой статус» в списке правки
-const MY_STATUS_RENAMED = { 'Играю время от времени': 'Играю' };
+const GAME_STATUSES = ['Вышла', 'Ранний доступ / демо', 'Не вышла', 'Закрыта'];
+// Подпись статуса игры в интерфейсе (значение в данных не меняется)
+const GS_LABEL = { 'Ранний доступ / демо': 'Демо' };
+function gsLabel(v) { return GS_LABEL[v] || v || ''; }
+// «Неразобранное» — вычисляемый фильтр группы «Статус»: ни одна личная галочка не отмечена.
+const UNSORTED = 'unsorted';
+function unsorted(g) { return !FLAGS.some(f => f.group === 'Статус' && g.flags && g.flags[f.k]); }
+// «Статус» — 9 галочек группы «Статус», отмечать можно несколько. Один из отмеченных может быть главным (★): поле g.mainStatus = ключ галочки.
+// Главный показывается плашкой поверх картинки. Снял отметку с главного — главного нет.
+const STATUS_KEYS = FLAGS.filter(f => f.group === 'Статус').map(f => f.k);
+function mainOf(g) { return g.mainStatus && g.flags && g.flags[g.mainStatus] ? g.mainStatus : ''; }
+function flagName(k) { return FLAGS.find(f => f.k === k).name; }
+function toggleFlag(o, k) {
+  o.flags = o.flags || {}; o.flags[k] = !o.flags[k];
+  if (!o.flags[k] && o.mainStatus === k) delete o.mainStatus;
+}
+// Сделать главным (заодно отметить) / повторно — снять главность.
+function toggleMain(o, k) {
+  o.flags = o.flags || {};
+  if (o.mainStatus === k && o.flags[k]) delete o.mainStatus; else { o.flags[k] = true; o.mainStatus = k; }
+}
+function setMain(o, k) { o.flags = o.flags || {}; if (!k) delete o.mainStatus; else { o.flags[k] = true; o.mainStatus = k; } }
+// Главные теги — ряд кнопок в шапке: те же фильтры, что в панели справа. [id группы фильтров, значение]
+// Два блока: слева «мои», справа «систематизированные». «Неразобранное» показывается, только если такие игры есть.
+const HEAD_TAGS = [
+  [['f1', UNSORTED], ['f1', 'cozy'], ['f1', 'yura'], ['f1', 'liked'], ['f1', 'friends'], ['f1', 'want']],
+  [['game', 'Вышла'], ['game', 'Ранний доступ / демо'], ['f0', 'multi'], ['f0', 'single']],
+];
+// Старый вид данных → новый (при загрузке из базы и перед сохранением). Старое поле «Мой статус» раскладывается в галочки.
+const OLD_MY_STATUS = { 'В планах': 'want', 'Жду выхода': 'want', 'Прошёл': 'done', 'Прошёл на 100 %': 'done', 'Пробовал демо': 'demo', 'Прошёл демо': 'demo' };
+const OLD_GAME_STATUS = { 'Ранний доступ': 'Ранний доступ / демо', 'Только демо': 'Ранний доступ / демо' };
+function normalize(g) {
+  if (!g) return g;
+  const f = g.flags && typeof g.flags === 'object' ? g.flags : {};
+  f.multi = !!(f.multi || f.coop);
+  f.liked = !!(f.liked || f.fav || f.recommend);
+  ['coop', 'fav', 'recommend', 'replay', 'story'].forEach(k => delete f[k]);
+  if ('myStatus' in g) { const k = OLD_MY_STATUS[g.myStatus]; if (k) f[k] = true; delete g.myStatus; }
+  FLAGS.forEach(x => { f[x.k] = !!f[x.k]; });
+  g.flags = f;
+  if ('mainStatus' in g && !(FLAGS.some(x => x.k === g.mainStatus && x.group === 'Статус') && f[g.mainStatus])) delete g.mainStatus;
+  if (OLD_GAME_STATUS[g.gameStatus]) g.gameStatus = OLD_GAME_STATUS[g.gameStatus];
+  return g;
+}
 const DEFAULT_THEME = 'indigo-1';
 const TOP_GENRES = 14; // сколько самых частых жанров в панели фильтров
 const MONTHS = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
@@ -3009,7 +3091,8 @@ const S = {
   loadErr: '',
   view: lsGet('view', 'tiles'),
   shape: lsGet('shape', 'v'),
-  facets: lsGet('facets', {}),
+  facets: lsGet('facets', {}), // включённые: { id группы: [значения] }
+  excl: lsGet('excl', {}),     // исключённые (красные): игра не должна иметь ни одного из них
   facetsOpen: false,
   q: '',
 };
@@ -3026,18 +3109,42 @@ async function loadGames() {
       if (data.length < PAGE) break;
     }
     S.games = rows.map(r => r.data).filter(Boolean);
-    S.games.forEach(g => { if (MY_STATUS_RENAMED[g.myStatus]) g.myStatus = MY_STATUS_RENAMED[g.myStatus]; });
+    S.games.forEach(normalize);
     S.load = 'ok';
   } catch (e) { S.load = 'error'; S.loadErr = errText(e); }
   if (S.user) render();
 }
-async function putGame(g) {
-  const { error } = await sb.from('games').upsert({ id: g.id, data: g, updated_at: new Date().toISOString() });
-  if (error) throw error;
+// Записи в базу идут строго по очереди: сохранение и фоновые дозаписи картинок не обгоняют друг друга.
+let WQ = Promise.resolve();
+function serial(fn) { const p = WQ.then(fn); WQ = p.catch(() => {}); return p; }
+// В базу уходит игра без картинок, которые ещё не долетели до бакета (локально они видны сразу).
+function forDb(g) {
+  const o = normalize(JSON.parse(JSON.stringify(g)));
+  let guard = 0;
+  while (unsent(o.cover) && guard++ < 50) Object.assign(o, COVER_PREV.get(o.cover.slice(3)) || { cover: null });
+  if (unsent(o.coverV)) o.coverV = null;
+  if (unsent(o.coverH)) o.coverH = null;
+  o.photos = (o.photos || []).filter(x => !unsent(x));
+  return o;
 }
-async function removeGame(id) {
-  const { error } = await sb.from('games').delete().eq('id', id);
-  if (error) throw error;
+function putGame(g) {
+  return serial(async () => {
+    const data = forDb(g);
+    const { error } = await sb.from('games').upsert({ id: g.id, data, updated_at: new Date().toISOString() });
+    if (error) throw error;
+    return JSON.stringify(data);
+  });
+}
+// Пока шло сохранение, картинка могла долететь, а ушла игра ещё без неё — дописываем.
+function resyncIfStale(id, sent) {
+  const g = S.games.find(x => x.id === id);
+  if (g && JSON.stringify(forDb(g)) !== sent) putGame(g).catch(e => toast('Не сохранилось: ' + errText(e)));
+}
+function removeGame(id) {
+  return serial(async () => {
+    const { error } = await sb.from('games').delete().eq('id', id);
+    if (error) throw error;
+  });
 }
 
 /* ================= Картинки из бакета ================= */
@@ -3061,14 +3168,59 @@ async function signedNow(src) {
   if (error || !data) return null;
   SIGNED.set(p, data.signedUrl); return data.signedUrl;
 }
-async function uploadImage(gameId, blob) {
-  const rnd = (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
-  const path = `${gameId}/${rnd}.jpg`;
-  const { error } = await sb.storage.from(BUCKET).upload(path, blob, { contentType: 'image/jpeg', upsert: false });
-  if (error) throw error;
-  SIGNED.set(path, URL.createObjectURL(blob)); // своё только что загруженное показываем сразу, без запроса ссылки
+
+/* ================= Фоновая очередь загрузок ================= */
+// Картинка сразу получает путь «sb:<id>/<uuid>.jpg» и видна из локальной копии; файл летит в бакет в фоне.
+// Долетел — путь снимается с «неотправленных», и актуальная версия игры (если путь в ней ещё есть) пишется в базу ещё раз.
+const JOBS = new Map();       // путь → { path, gameId, blob, state: 'up' | 'fail', uploaded }
+const COVER_PREV = new Map(); // путь неотправленной обложки → обложка до неё (её и пишем в базу, пока файл летит)
+const RETRY = [3000, 10000, 30000];
+function unsent(src) { return isSb(src) && JOBS.has(src.slice(3)) && !JOBS.get(src.slice(3)).uploaded; }
+function activeJobs() { let n = 0; JOBS.forEach(j => { if (j.state === 'up') n++; }); return n; }
+function badgeHTML(path) {
+  const j = JOBS.get(path); if (!j || j.uploaded) return '';
+  return `<span class="upb ${j.state === 'fail' ? 'bad' : ''}" data-upb="${esc(path)}">${j.state === 'fail' ? 'Не загрузилась' : 'Загружается…'}</span>`;
+}
+function refreshUploads(path) {
+  const n = activeJobs(), q = $('#upq');
+  q.hidden = !n; q.textContent = `Загружаю картинки: ${n}`;
+  if (path) document.querySelectorAll(`[data-upb="${CSS.escape(path)}"]`).forEach(el => { const h = badgeHTML(path); if (h) el.outerHTML = h; else el.remove(); });
+}
+function newImagePath(gameId) {
+  const rnd = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);
+  return `${gameId}/${rnd}.jpg`;
+}
+function enqueueUpload(gameId, blob) {
+  const path = newImagePath(gameId);
+  SIGNED.set(path, URL.createObjectURL(blob)); // своё показываем сразу из локальной копии
+  const j = { path, gameId, blob, state: 'up', uploaded: false };
+  JOBS.set(path, j); runJob(j); refreshUploads();
   return 'sb:' + path;
 }
+function gameHas(g, src) { return !!g && (g.cover === src || g.coverV === src || g.coverH === src || (g.photos || []).includes(src)); }
+async function runJob(j) {
+  const src = 'sb:' + j.path;
+  for (let a = 0; ; a++) {
+    try {
+      if (!j.uploaded) {
+        const { error } = await sb.storage.from(BUCKET).upload(j.path, j.blob, { contentType: 'image/jpeg', upsert: false });
+        if (error && !/exist|duplicate/i.test(error.message || '')) throw error; // «уже есть» — прошлая попытка успела
+        j.uploaded = true; refreshUploads(j.path);
+      }
+      const g = S.games.find(x => x.id === j.gameId);
+      if (gameHas(g, src)) await putGame(g); // игру удалили или картинку убрали — дописывать нечего
+      JOBS.delete(j.path); COVER_PREV.delete(j.path); refreshUploads(j.path);
+      return;
+    } catch (e) {
+      if (a >= RETRY.length) break;
+      await new Promise(r => setTimeout(r, RETRY[a]));
+    }
+  }
+  j.state = 'fail'; refreshUploads(j.path);
+  const g = S.games.find(x => x.id === j.gameId) || (M && M.draft && M.draft.id === j.gameId ? M.draft : null);
+  toastAct(`Картинка не загрузилась: ${(g && g.name) || 'без названия'}`, 'Повторить', () => { j.state = 'up'; refreshUploads(j.path); runJob(j); });
+}
+window.addEventListener('beforeunload', e => { if (activeJobs()) { e.preventDefault(); e.returnValue = ''; } });
 
 /* ================= Утилиты ================= */
 const $ = s => document.querySelector(s);
@@ -3078,6 +3230,7 @@ const IC = {
   pen: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
   filter: '<path d="M3 5h18l-7 8v6l-4 2v-8Z"/>',
   back: '<path d="m15 18-6-6 6-6"/>',
+  chev: '<path d="m6 9 6 6 6-6"/>',
   plus: '<path d="M12 5v14M5 12h14"/>',
   star: '<path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9Z"/>',
   trash: '<path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/>',
@@ -3090,10 +3243,20 @@ function imgTag(src, name) {
   if (isSb(src)) {
     const u = srcOf(src);
     if (!u) { const p = src.slice(3); wantSigned(p); return ph(name).replace('<div ', `<div data-sb="${esc(p)}" data-name="${esc(name)}" `); }
-    src = u;
+    return `<img src="${esc(u)}" alt="" loading="lazy" data-name="${esc(name)}" onload="imgFit(this)" onerror="imgFail(this)">` + badgeHTML(src.slice(3));
   }
-  return `<img src="${esc(src)}" alt="" loading="lazy" data-name="${esc(name)}" onerror="imgFail(this)">`;
+  return `<img src="${esc(src)}" alt="" loading="lazy" data-name="${esc(name)}" onload="imgFit(this)" onerror="imgFail(this)">`;
 }
+// Пропорции картинки сильно (>25 %) не те, что у рамки: показываем целиком по центру, поля — размытая затемнённая копия.
+window.imgFit = function (el) {
+  const box = el.parentElement, bw = box && box.clientWidth, bh = box && box.clientHeight, nw = el.naturalWidth, nh = el.naturalHeight;
+  if (!bw || !bh || !nw || !nh || el.classList.contains('fit')) return;
+  const k = (nw / nh) / (bw / bh);
+  if (k < 1.25 && k > 1 / 1.25) return;
+  el.classList.add('fit');
+  const bg = document.createElement('img'); bg.className = 'imgbg'; bg.alt = ''; bg.src = el.currentSrc || el.src; bg.setAttribute('aria-hidden', 'true');
+  el.before(bg);
+};
 window.imgFail = function (el) { el.insertAdjacentHTML('afterend', ph(el.dataset.name)); el.remove(); };
 function coverOf(g, shape) { return shape === 'h' ? (g.coverH || g.cover || g.coverV) : (g.coverV || g.cover || g.coverH); }
 function ratingColor(r) {
@@ -3105,14 +3268,14 @@ function ratingHTML(r, extra = '') {
   if (r == null || r === '') return `<span class="rate none ${extra}">—</span>`;
   return `<span class="rate ${extra}" style="color:${ratingColor(r)}">${r}</span>`;
 }
-// Плашки статусов: «Мой статус» всегда, статус игры — если он не «Вышла». Одна логика для плитки и окна.
+// Плашки: статус игры — если он не «Вышла», плюс главный статус ★ (если есть). Одна логика для плитки и окна.
 function statusPills(g) {
   const a = [];
-  if (g.myStatus) a.push({ t: g.myStatus, my: true });
-  if (g.gameStatus && g.gameStatus !== 'Вышла') a.push({ t: g.gameStatus });
+  if (g.gameStatus && g.gameStatus !== 'Вышла') a.push({ t: gsLabel(g.gameStatus) });
+  const my = mainOf(g); if (my) a.push({ t: flagName(my), my: true });
   return a;
 }
-function pillsHTML(g) { return statusPills(g).map(p => `<span class="pill ${p.my ? 'my' : ''}" title="${p.my ? 'Мой статус' : 'Статус игры'}">${esc(p.t)}</span>`).join(''); }
+function pillsHTML(g) { return statusPills(g).map(p => `<span class="pill ${p.my ? 'my' : ''}" title="${p.my ? 'Главный статус' : 'Статус игры'}">${esc(p.t)}</span>`).join(''); }
 function fmtMonth(v) { if (!v) return ''; const [y, m] = v.split('-'); return `${MONTHS[+m - 1]} ${y}`; }
 function fmtDate(v) { if (!v) return ''; const [y, m, d] = v.split('-'); return `${+d} ${MONTHS[+m - 1]} ${y}`; }
 function playedText(g) {
@@ -3125,6 +3288,13 @@ function today() { const d = new Date(); return `${d.getFullYear()}-${String(d.g
 function plural(n, a, b, c) { const m = n % 10, h = n % 100; return m === 1 && h !== 11 ? a : m >= 2 && m <= 4 && (h < 12 || h > 14) ? b : c; }
 function allGenres() { const s = new Map(); S.games.forEach(g => (g.genres || []).forEach(x => { const k = x.toLowerCase(); if (!s.has(k)) s.set(k, x); })); return [...s.values()].sort((a, b) => a.localeCompare(b, 'ru')); }
 let toastT;
+function toastAct(msg, label, fn) {
+  document.querySelectorAll('.toast').forEach(e => e.remove()); clearTimeout(toastT);
+  const d = document.createElement('div'); d.className = 'toast act'; d.textContent = msg;
+  const b = document.createElement('button'); b.className = 'btn sm'; b.textContent = label; b.onclick = () => { d.remove(); fn(); };
+  const x = document.createElement('button'); x.className = 'btn quiet sm icon'; x.title = 'Закрыть'; x.innerHTML = ic('x', ''); x.onclick = () => d.remove();
+  d.append(b, x); document.body.appendChild(d);
+}
 function toast(msg) { document.querySelectorAll('.toast').forEach(e => e.remove()); const d = document.createElement('div'); d.className = 'toast'; d.textContent = msg; document.body.appendChild(d); clearTimeout(toastT); toastT = setTimeout(() => d.remove(), 4000); }
 
 /* ================= Колонки таблицы ================= */
@@ -3132,42 +3302,62 @@ const COLS = [
   { id: 'name', label: 'Название', full: 'Название' },
   { id: 'rating', label: 'Оценка', full: 'Оценка', num: true },
   { id: 'gameStatus', label: 'Статус игры', full: 'Статус игры' },
-  { id: 'myStatus', label: 'Мой статус', full: 'Мой статус' },
   { id: 'genres', label: 'Жанры', full: 'Жанры' },
   ...FLAGS.map(f => ({ id: 'f:' + f.k, label: f.short, full: f.name, flag: f.k })),
 ];
 
 /* ================= Фильтры-кнопки (панель справа) ================= */
-// Внутри «Игра», «Жанры», «Мой статус» — любое из выбранных; внутри галочек — все выбранные; между группами — И.
+// Внутри «Игра», «Жанры» — любое из выбранных; внутри галочек — все выбранные; между группами — И.
 function topGenres() {
   const m = new Map();
   S.games.forEach(g => new Set((g.genres || []).map(x => x.toLowerCase())).forEach(k => { const e = m.get(k); if (e) e.n++; else m.set(k, { v: g.genres.find(x => x.toLowerCase() === k), n: 1 }); }));
   return [...m.values()].sort((a, b) => b.n - a.n || a.v.localeCompare(b.v, 'ru')).slice(0, TOP_GENRES).map(e => e.v);
 }
-const flagFacet = grp => ({ id: 'f' + FLAG_GROUPS.indexOf(grp), name: grp, all: true, items: () => FLAGS.filter(f => f.group === grp).map(f => ({ v: f.k, t: f.name })), has: (g, v) => !!(g.flags && g.flags[v]) });
+const flagFacet = grp => ({ id: 'f' + FLAG_GROUPS.indexOf(grp), name: grp, all: true,
+  items: () => [...(grp === 'Статус' && (S.games.some(unsorted) || facetState('f1', UNSORTED)) ? [{ v: UNSORTED, t: 'Неразобранное' }] : []), ...FLAGS.filter(f => f.group === grp).map(f => ({ v: f.k, t: f.name }))],
+  has: (g, v) => v === UNSORTED ? unsorted(g) : !!(g.flags && g.flags[v]) });
+// Порядок в панели: «Статус», «Игра», «Общее», «Жанры». id групп галочек (f0 — Общее, f1 — Статус) не меняются: на них сохранён выбор.
 const FACETS = [
-  { id: 'game', name: 'Игра', items: () => GAME_STATUSES.filter(x => x !== 'Закрыта' || S.games.some(g => g.gameStatus === x)).map(x => ({ v: x, t: x })), has: (g, v) => g.gameStatus === v },
+  flagFacet(FLAG_GROUPS[1]),
+  { id: 'game', name: 'Игра', items: () => GAME_STATUSES.filter(x => x !== 'Закрыта' || S.games.some(g => g.gameStatus === x)).map(x => ({ v: x, t: gsLabel(x) })), has: (g, v) => g.gameStatus === v },
   flagFacet(FLAG_GROUPS[0]),
   { id: 'genre', name: 'Жанры', items: () => topGenres().map(x => ({ v: x, t: x })), has: (g, v) => (g.genres || []).some(x => x.toLowerCase() === v.toLowerCase()) },
-  flagFacet(FLAG_GROUPS[1]),
-  { id: 'my', name: 'Мой статус', items: () => MY_STATUSES.filter(x => S.games.some(g => g.myStatus === x)).map(x => ({ v: x, t: x })), has: (g, v) => g.myStatus === v },
 ];
-Object.keys(S.facets).forEach(k => { if (!FACETS.some(f => f.id === k) || !Array.isArray(S.facets[k])) delete S.facets[k]; });
+// Сохранённый выбор со старыми значениями (снятые группы, галочки, статусы) тихо отбрасывается.
+[S.facets, S.excl].forEach(F => { if (!F || typeof F !== 'object' || Array.isArray(F)) return; Object.keys(F).forEach(k => {
+  const f = FACETS.find(x => x.id === k);
+  if (!f || !Array.isArray(F[k])) return delete F[k];
+  if (k !== 'genre') { const ok = f.id === 'game' ? GAME_STATUSES : [...FLAGS.filter(x => x.group === f.name).map(x => x.k), ...(f.name === 'Статус' ? [UNSORTED] : [])]; F[k] = F[k].filter(v => ok.includes(v)); }
+  if (!F[k].length) delete F[k];
+}); });
+if (!S.excl || typeof S.excl !== 'object' || Array.isArray(S.excl)) S.excl = {};
 function facetSel(id) { return S.facets[id] || []; }
-function facetCount() { return Object.values(S.facets).reduce((n, a) => n + a.length, 0); }
-function passes(g, fac = S.facets) {
+function exclSel(id) { return S.excl[id] || []; }
+function facetState(id, v) { return facetSel(id).includes(v) ? 'on' : exclSel(id).includes(v) ? 'ex' : ''; }
+function facetCount() { return [S.facets, S.excl].reduce((n, F) => n + Object.values(F).reduce((m, a) => m + a.length, 0), 0); }
+// Исключённые значения: игра не должна иметь ни одного (статус/жанр не тот, галочка не отмечена, не «неразобранная»).
+function passes(g, fac = S.facets, ex = S.excl) {
   if (S.q && !(g.name || '').toLowerCase().includes(S.q.toLowerCase())) return false;
-  return FACETS.every(f => { const sel = fac[f.id] || []; return !sel.length || (f.all ? sel.every(v => f.has(g, v)) : sel.some(v => f.has(g, v))); });
+  return FACETS.every(f => {
+    const sel = fac[f.id] || [], xs = ex[f.id] || [];
+    if (xs.some(v => f.has(g, v))) return false;
+    return !sel.length || (f.all ? sel.every(v => f.has(g, v)) : sel.some(v => f.has(g, v)));
+  });
 }
 // Список всегда: оценка от высокой к низкой, без оценки — в конце; при равной — по названию А→Я.
 const byName = (a, b) => (a.name || '').localeCompare(b.name || '', 'ru', { sensitivity: 'base' });
 const byRating = (a, b) => (b.rating == null ? -1 : b.rating) - (a.rating == null ? -1 : a.rating) || byName(a, b);
 function visible() { return S.games.filter(g => passes(g)).sort(byRating); }
-function saveView() { lsSet('view', S.view); lsSet('shape', S.shape); lsSet('facets', S.facets); }
+function saveView() { lsSet('view', S.view); lsSet('shape', S.shape); lsSet('facets', S.facets); lsSet('excl', S.excl); }
+function clearFacets() { S.facets = {}; S.excl = {}; }
+// Клик по кругу: выкл → включено → исключено → выкл.
 function toggleFacet(id, v) {
-  const sel = facetSel(id).slice(), i = sel.indexOf(v);
-  if (i < 0) sel.push(v); else sel.splice(i, 1);
-  if (sel.length) S.facets[id] = sel; else delete S.facets[id];
+  const st = facetState(id, v);
+  const put = (F, arr) => { if (arr.length) F[id] = arr; else delete F[id]; };
+  put(S.facets, facetSel(id).filter(x => x !== v));
+  put(S.excl, exclSel(id).filter(x => x !== v));
+  if (st === '') put(S.facets, [...facetSel(id), v]);
+  else if (st === 'on') put(S.excl, [...exclSel(id), v]);
   saveView(); render();
 }
 function setFacetsOpen(on) { S.facetsOpen = on; document.body.classList.toggle('fopen', on); }
@@ -3176,7 +3366,7 @@ function setFacetsOpen(on) { S.facetsOpen = on; document.body.classList.toggle('
 function renderHeader() {
   document.querySelectorAll('#viewSeg button').forEach(b => b.classList.toggle('on', b.dataset.view === S.view));
   document.querySelectorAll('#shapeSeg button').forEach(b => b.classList.toggle('on', b.dataset.shape === S.shape));
-  $('#shapeSeg').hidden = S.view !== 'tiles';
+  $('#shapeSeg').style.visibility = S.view === 'tiles' ? '' : 'hidden'; // место держит: шапка не прыгает при смене вида
   $('#addBtn').hidden = S.load !== 'ok';
   const fc = facetCount(); $('#facetBtn').innerHTML = `${ic('filter')} Фильтры${fc ? ` (${fc})` : ''}`;
   const t = THEMES.find(x => x[0] === curTheme()) || THEMES[0];
@@ -3184,16 +3374,32 @@ function renderHeader() {
   $('#themeBtn').title = `Тема: ${t[1]} · ${t[2]}`;
 }
 // На каждой кнопке — сколько игр будет показано, если она включена (вместе с остальным выбором и поиском).
+function fbHTML(fid, v, t) {
+  // Выкл — сколько будет при включении; включена/исключена — сколько найдено сейчас.
+  const st = facetState(fid, v), k = st ? S.games.filter(g => passes(g)).length : S.games.filter(g => passes(g, { ...S.facets, [fid]: [...facetSel(fid), v] })).length;
+  return `<button class="fb ${st} ${k ? '' : 'zero'}" data-fg="${fid}" data-fv="${esc(v)}" title="${st === 'ex' ? 'Исключено — клик: снять' : st === 'on' ? 'Включено — клик: исключить' : 'Клик: включить'}"><span class="ft">${esc(t)}</span><span class="fn">${k}</span></button>`;
+}
+// Главные теги в шапке — те же фильтры, что в панели, двумя блоками. Не влезают в одну строку — каждый блок делится поровну на два ряда.
+// На телефоне (≤900px) — всегда одна строка с прокруткой вбок. Раскладка зависит только от ширины места под теги, не от вида.
+function headLabel(fid, v) { return v === UNSORTED ? 'Неразобранное' : fid === 'game' ? gsLabel(v) : flagName(v); }
+function renderHeadTags() {
+  const box = $('#htags');
+  if (S.load !== 'ok') { box.innerHTML = ''; return; }
+  const showUns = S.games.some(unsorted) || facetState('f1', UNSORTED);
+  const blocks = HEAD_TAGS.map(b => b.filter(([, v]) => v !== UNSORTED || showUns).map(([fid, v]) => fbHTML(fid, v, headLabel(fid, v))));
+  const draw = split => { box.innerHTML = blocks.map(b => { const h = split ? Math.ceil(b.length / 2) : b.length; return `<div class="hblk"><div class="hrow">${b.slice(0, h).join('')}</div>${h < b.length ? `<div class="hrow">${b.slice(h).join('')}</div>` : ''}</div>`; }).join(''); };
+  draw(false);
+  if (matchMedia('(max-width: 900px)').matches) return;
+  const need = [...box.children].reduce((w, b) => w + b.offsetWidth, 0) + 12 * (box.children.length - 1);
+  if (need > box.clientWidth) draw(true);
+}
 function renderFacets(n) {
   let h = `<div class="fhead"><span class="found">Найдено ${n}</span>${facetCount() ? '<button class="btn quiet sm" data-freset="1">Сбросить</button>' : ''}<button class="btn quiet sm icon fclose" data-fclose="1" title="Закрыть">${ic('x')}</button></div>`;
   FACETS.forEach(f => {
     const sel = facetSel(f.id), items = f.items();
-    sel.forEach(v => { if (!items.some(x => x.v === v)) items.push({ v, t: v }); });
+    [...sel, ...exclSel(f.id)].forEach(v => { if (!items.some(x => x.v === v)) items.push({ v, t: v }); });
     if (!items.length) return;
-    h += `<div class="fgrp"><div class="lbl">${esc(f.name)}</div><div class="fbtns">` + items.map(x => {
-      const on = sel.includes(x.v), k = S.games.filter(g => passes(g, { ...S.facets, [f.id]: on ? sel : [...sel, x.v] })).length;
-      return `<button class="fb ${on ? 'on' : ''} ${k ? '' : 'zero'}" data-fg="${f.id}" data-fv="${esc(x.v)}"><span class="ft">${esc(x.t)}</span><span class="fn">${k}</span></button>`;
-    }).join('') + '</div></div>';
+    h += `<div class="fgrp"><div class="lbl">${esc(f.name)}</div><div class="fbtns">` + items.map(x => fbHTML(f.id, x.v, x.t)).join('') + '</div></div>';
   });
   $('#facets').innerHTML = h;
 }
@@ -3211,8 +3417,8 @@ function renderTiles(list) {
 }
 /* Ширины колонок: своя ширина (перетаскиванием) запоминается в drozdgames.colw.
    Остальные колонки ужимаются до минимумов, чтобы таблица влезла в экран; не влезает — прокрутка вбок. */
-const CW_DEF = { cover: 80, name: 180, rating: 84, gameStatus: 140, myStatus: 140, genres: 140 }, CW_FLAG = 56;
-const CW_MIN = { cover: 56, name: 110, rating: 56, gameStatus: 104, myStatus: 104, genres: 86 }, CW_FLAG_MIN = 44;
+const CW_DEF = { cover: 80, name: 180, rating: 84, gameStatus: 140, genres: 140 }, CW_FLAG = 56;
+const CW_MIN = { cover: 56, name: 110, rating: 56, gameStatus: 104, genres: 86 }, CW_FLAG_MIN = 44;
 S.colw = lsGet('colw', {});
 function colIds() { return ['cover', ...COLS.map(c => c.id)]; }
 function colWidths() {
@@ -3228,7 +3434,7 @@ function colWidths() {
     free.forEach(id => { w[id] = Math.floor(w[id] - (w[id] - min[id]) * k); });
   } else if (over < 0) {
     // лишнее место — названию (или первой не заданной вручную колонке), только на экране
-    const to = ['name', 'genres', 'myStatus', 'gameStatus'].find(id => !S.colw[id]);
+    const to = ['name', 'genres', 'gameStatus'].find(id => !S.colw[id]);
     if (to) w[to] += -over;
   }
   return w;
@@ -3246,8 +3452,7 @@ function renderTable(list) {
     h += `<tr data-open="${g.id}"><td><div class="thumb">${imgTag(coverOf(g, 'h'), g.name)}</div></td>
       <td class="nm" title="${esc(g.name)}">${esc(g.name)}</td>
       <td class="num">${ratingHTML(g.rating)}</td>
-      <td class="mut" title="${esc(g.gameStatus || '')}">${esc(g.gameStatus || '')}</td>
-      <td class="mut" title="${esc(g.myStatus || '')}">${esc(g.myStatus || '')}</td>
+      <td class="mut" title="${esc(gsLabel(g.gameStatus))}">${esc(gsLabel(g.gameStatus))}</td>
       <td class="gen" title="${esc((g.genres || []).join(', '))}">${esc((g.genres || []).join(', '))}</td>
       ${FLAGS.map(f => `<td class="c">${g.flags && g.flags[f.k] ? '<span class="yes">✓</span>' : ''}</td>`).join('')}</tr>`;
   });
@@ -3260,6 +3465,7 @@ function render() {
   $('#login').hidden = !guest; $('#app').hidden = guest;
   if (guest) { closeModal(); closeThemePop(); return; }
   renderHeader();
+  renderHeadTags();
   if (S.load !== 'ok') {
     $('#facets').innerHTML = '';
     $('#list').innerHTML = S.load === 'error'
@@ -3327,10 +3533,10 @@ window.addEventListener('blur', endHold);
 /* ================= Окно игры ================= */
 // M: { id, mode: 'read'|'edit', draft, orig, isNew, err, genEdit, descEdit, revEdit }
 let M = null;
-function blank() { return { id: 'g' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name: '', cover: null, coverV: null, coverH: null, photos: [], description: '', review: '', added: today(), playedFrom: '', playedTo: '', rating: null, gameStatus: 'Вышла', myStatus: '', genres: [], flags: fl() }; }
+function blank() { return { id: 'g' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name: '', cover: null, coverV: null, coverH: null, photos: [], description: '', review: '', added: today(), playedFrom: '', playedTo: '', rating: null, gameStatus: 'Вышла', genres: [], flags: fl() }; }
 function openGame(id) { M = { id, mode: 'read' }; renderModal(); }
 function openNew() { const d = blank(); M = { id: d.id, mode: 'edit', draft: d, isNew: true, orig: JSON.stringify(d), genEdit: true, descEdit: true }; renderModal(); setTimeout(() => { const n = $('.cname-in'); if (n) n.focus(); }, 0); }
-function closeModal() { M = null; $('#modalRoot').innerHTML = ''; document.body.classList.remove('lock'); closeLightbox(); }
+function closeModal() { closeDd(); M = null; $('#modalRoot').innerHTML = ''; document.body.classList.remove('lock'); closeLightbox(); }
 function game() { return S.games.find(g => g.id === M.id); }
 // Правка с изменениями не закрывается кликом мимо — только «Сохранить» / «Отмена».
 function dirty() { if (!M || M.mode !== 'edit') return false; const gi = $('#gIn'); return JSON.stringify(M.draft) !== M.orig || !!(gi && gi.value.trim()); }
@@ -3340,7 +3546,6 @@ function modalHTML() {
   const ed = M.mode === 'edit', me = !!S.user;
   const g = ed ? M.draft : game();
   const cov = coverOf(g, 'v'), photos = g.photos || [], played = playedText(g);
-  const opt = (list, v) => list.map(x => `<option ${x === v ? 'selected' : ''}>${esc(x)}</option>`).join('');
 
   // Кнопки правки — в той же строке, что «Изменить», чтобы окно не меняло размер. ✕ в правке = «Отмена».
   const tools = ed
@@ -3350,20 +3555,29 @@ function modalHTML() {
   const nameStrip = ed
     ? `<div class="cname ed ${M.err ? 'bad' : ''}"><textarea class="cname-in" data-f="name" rows="1" placeholder="Название игры">${esc(g.name)}</textarea></div>`
     : `<div class="cname">${esc(g.name)}</div>`;
+  // Выпадашки (свои меню, см. «Выпадающие меню»): в правке — статус игры, мой статус, оценка; в просмотре — мой статус и оценка, выбор сразу сохраняется.
+  const my = mainOf(g), live = ed || me;
+  const myDd = `<button type="button" class="pill dd my ${my ? '' : 'empty'}" data-dd="my" title="Главный статус">${esc(my ? flagName(my) : 'Статус')}${ic('chev')}</button>`;
   const ovSt = ed
-    ? `<select class="pill my" data-f="myStatus" title="Мой статус"><option value="" ${g.myStatus ? '' : 'selected'}>${NO_STATUS}</option>${opt(MY_STATUSES, g.myStatus)}</select><select class="pill" data-f="gameStatus" title="Статус игры">${opt(GAME_STATUSES, g.gameStatus)}</select>`
-    : pillsHTML(g);
-  const ovRate = ed
-    ? `<select class="ovrate" data-f="rating" title="Оценка" style="color:${ratingColor(g.rating)}"><option value="" ${g.rating == null ? 'selected' : ''}>—</option>${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => `<option value="${n}" ${g.rating === n ? 'selected' : ''}>${n}</option>`).join('')}</select>`
+    ? `<button type="button" class="pill dd" data-dd="game" title="Статус игры">${esc(gsLabel(g.gameStatus) || '—')}${ic('chev')}</button>${myDd}`
+    : (g.gameStatus && g.gameStatus !== 'Вышла' ? `<span class="pill" title="Статус игры">${esc(gsLabel(g.gameStatus))}</span>` : '') + (live ? myDd : pillsHTML({ flags: g.flags, mainStatus: g.mainStatus }));
+  const ovRate = live
+    ? `<button type="button" class="ovrate dd" data-dd="rating" title="Оценка">${ratingHTML(g.rating)}</button>`
     : `<span class="ovrate" title="Оценка">${ratingHTML(g.rating)}</span>`;
 
   // Просмотр: только отмеченные, без ✓, группа без отмеченных скрыта. Правка: все, нажимаемые.
+  // Просмотр у владельца: все статусы всегда видны — отмеченные подсвечены, клик ставит/снимает и сразу сохраняет (обычно ставят несколько).
+  const quick = !ed && me;
   const flags = FLAG_GROUPS.map(grp => {
-    const list = FLAGS.filter(f => f.group === grp && (ed || (g.flags && g.flags[f.k])));
+    const q = quick && grp === 'Статус';
+    const list = FLAGS.filter(f => f.group === grp && (ed || q || (g.flags && g.flags[f.k])));
     if (!list.length) return '';
+    // У отмеченного статуса — ★ (залита у главного); клик по ★ или двойной клик по чипу — сделать главным / снять.
+    const star = f => f.group === 'Статус' && g.flags && g.flags[f.k] ? `<span class="star ${mainOf(g) === f.k ? 'on' : ''}" data-star="${f.k}" title="${mainOf(g) === f.k ? 'Главный — снять' : 'Сделать главным'}">${mainOf(g) === f.k ? '★' : '☆'}</span>` : '';
     const items = list.map(f => { const on = g.flags && g.flags[f.k]; return ed
-      ? `<button type="button" class="fl ${on ? 'on' : ''}" data-flag="${f.k}">${esc(f.name)}</button>`
-      : `<span class="fl on">${esc(f.name)}</span>`; }).join('');
+      ? `<button type="button" class="fl ${on ? 'on' : ''}" data-flag="${f.k}">${esc(f.name)}${star(f)}</button>`
+      : q ? `<button type="button" class="fl ${on ? 'on' : ''}" data-qflag="${f.k}" title="Клик — отметить/снять, двойной клик — главный">${esc(f.name)}${star(f)}</button>`
+      : `<span class="fl on">${esc(f.name)}${me ? star(f) : ''}</span>`; }).join('');
     return `<div class="shead"><span class="lbl">${esc(grp)}</span></div><div class="row">${items}</div>`;
   }).filter(Boolean).map((x, i) => `<div class="${i ? 'sec' : ''}">${x}</div>`).join('');
 
@@ -3436,13 +3650,14 @@ function renderModal() {
     r.innerHTML = '<div class="scrim" id="scrim"><div class="modal" role="dialog" aria-modal="true"></div></div>';
     modal = r.querySelector('.modal');
   }
+  closeDd();
   modal.innerHTML = modalHTML();
   document.body.classList.add('lock');
   modal.querySelectorAll('.cname-in').forEach(autosize);
   if (M.busy) setBusy(true);
 }
 function startEdit() {
-  M.draft = JSON.parse(JSON.stringify(game()));
+  M.draft = normalize(JSON.parse(JSON.stringify(game())));
   M.draft.flags = { ...fl(), ...(M.draft.flags || {}) }; M.draft.photos = M.draft.photos || []; M.draft.genres = M.draft.genres || [];
   M.orig = JSON.stringify(M.draft); M.mode = 'edit'; M.err = ''; M.genEdit = false; M.descEdit = false; M.revEdit = false;
   renderModal();
@@ -3463,11 +3678,13 @@ async function saveEdit() {
   if (prev) d.review = prev.review || '';
   const out = JSON.parse(JSON.stringify(d));
   setBusy(true);
-  try { await putGame(out); }
+  let sent;
+  try { sent = await putGame(out); }
   catch (e) { setBusy(false); toast('Не сохранилось: ' + errText(e)); return; }
   M && (M.busy = false);
   const i = S.games.findIndex(g => g.id === out.id);
   if (i < 0) S.games.push(out); else S.games[i] = out;
+  resyncIfStale(out.id, sent);
   if (M && M.id === out.id && M.mode === 'edit') toRead();
   render();
 }
@@ -3475,9 +3692,11 @@ async function saveReview() {
   const g = game(), t = $('#revIn'); if (!g || !t || M.busy) return;
   const out = { ...JSON.parse(JSON.stringify(g)), review: t.value.trim() };
   setBusy(true);
-  try { await putGame(out); }
+  let sent;
+  try { sent = await putGame(out); }
   catch (e) { setBusy(false); toast('Не сохранилось: ' + errText(e)); return; }
   g.review = out.review;
+  resyncIfStale(out.id, sent);
   if (!M || M.id !== out.id) { render(); return; }
   M.busy = false;
   if (M.draft) { M.draft.review = g.review; const o = JSON.parse(M.orig); o.review = g.review; M.orig = JSON.stringify(o); }
@@ -3496,20 +3715,28 @@ function downscale(file) {
     img.src = url;
   });
 }
-function setCover(src) { M.draft.cover = src; M.draft.coverV = null; M.draft.coverH = null; }
+function setCover(src) { if (unsent(src)) COVER_PREV.set(src.slice(3), { cover: M.draft.cover, coverV: M.draft.coverV, coverH: M.draft.coverH }); M.draft.cover = src; M.draft.coverV = null; M.draft.coverH = null; }
 function focusEnd(sel) { const t = $(sel); if (t) { t.focus(); const n = t.value.length; t.setSelectionRange(n, n); } }
 const root = document.getElementById('modalRoot');
+// Клик по чипу ждёт чуть-чуть: если это двойной клик — вместо отметки делаем главным.
+let chipT = null;
+function chipClick(e, k, single, dbl) { clearTimeout(chipT); if (e.detail >= 2) return dbl(k); chipT = setTimeout(() => single(k), 230); }
 root.addEventListener('click', e => {
   if (!M) return;
   if (e.target.id === 'scrim') { if (!dirty()) closeModal(); return; }
   const a = e.target.closest('[data-act]'), act = a && a.dataset.act;
   if (act === 'close') return closeModal();
   if (act === 'edit') return startEdit();
+  const ddb = e.target.closest('[data-dd]'); if (ddb) return dd && dd.btn === ddb ? closeDd() : openDd(ddb);
+  const st = e.target.closest('[data-star]');
+  if (st) { clearTimeout(chipT); const k = st.dataset.star; if (M.mode === 'edit') { toggleMain(M.draft, k); return renderModal(); } return quickSave(o => toggleMain(o, k)); }
+  const qf = e.target.closest('[data-qflag]');
+  if (qf && M.mode === 'read') return chipClick(e, qf.dataset.qflag, k => quickSave(o => toggleFlag(o, k)), k => quickSave(o => toggleMain(o, k)));
   if (act === 'rev') { M.revEdit = true; renderModal(); return focusEnd('#revIn'); }
   if (act === 'revcancel') { M.revEdit = false; return renderModal(); }
   if (act === 'revsave') return saveReview();
   const z = e.target.closest('[data-zoom]');
-  if (z && !e.target.closest('.pbtn')) return openLightbox((M.mode === 'edit' ? M.draft : game()).photos[+z.dataset.zoom]);
+  if (z && !e.target.closest('.pbtn')) return openLightbox((M.mode === 'edit' ? M.draft : game()).photos, +z.dataset.zoom);
   if (M.mode !== 'edit') return;
   const d = M.draft;
   if (act === 'save') return saveEdit();
@@ -3522,11 +3749,12 @@ root.addEventListener('click', e => {
       err => { setBusy(false); toast('Не удалилось: ' + errText(err)); });
     return;
   }
-  if (act === 'pickcover') { if (e.target.closest('select')) return; return $('#fCover').click(); }
+  if (act === 'pickcover') return $('#fCover').click();
   if (act === 'pickphotos') return $('#fPhotos').click();
   if (act === 'editgen') { M.genEdit = true; renderModal(); return $('#gIn').focus(); }
   if (act === 'editdesc') { M.descEdit = true; renderModal(); return focusEnd('[data-f="description"]'); }
-  const f = e.target.closest('[data-flag]'); if (f) { d.flags[f.dataset.flag] = !d.flags[f.dataset.flag]; return renderModal(); }
+  const f = e.target.closest('[data-flag]');
+  if (f) return chipClick(e, f.dataset.flag, k => { if (M && M.draft === d) { toggleFlag(d, k); renderModal(); } }, k => { if (M && M.draft === d) { toggleMain(d, k); renderModal(); } });
   const dg = e.target.closest('[data-delg]'); if (dg) { d.genres.splice(+dg.dataset.delg, 1); return renderTags(); }
   const dp = e.target.closest('[data-delph]'); if (dp) { d.photos.splice(+dp.dataset.delph, 1); return renderModal(); }
   const mk = e.target.closest('[data-mkcover]'); if (mk) { setCover(d.photos[+mk.dataset.mkcover]); toast('Фото стало обложкой'); return renderModal(); }
@@ -3556,13 +3784,9 @@ root.addEventListener('change', async e => {
     let blobs;
     try { blobs = await Promise.all(files.map(downscale)); }
     catch (err) { toast('Не получилось прочитать картинку'); return; }
-    toast('Загружаю картинку…');
-    let urls;
-    try { urls = await Promise.all(blobs.map(b => uploadImage(d.id, b))); }
-    catch (err) { toast('Картинка не загрузилась: ' + errText(err)); return; }
     if (!M || M.mode !== 'edit' || M.draft !== d) return;
+    const urls = (isCover ? blobs.slice(0, 1) : blobs).map(b => enqueueUpload(d.id, b));
     if (isCover) setCover(urls[0]); else d.photos.push(...urls);
-    toast(isCover ? 'Картинка загружена' : (urls.length > 1 ? 'Фото загружены' : 'Фото загружено'));
     renderModal();
   }
 });
@@ -3574,29 +3798,92 @@ root.addEventListener('keydown', e => {
 });
 root.addEventListener('focusout', e => { if (e.target.id === 'gIn' && e.target.value.trim() && M && M.mode === 'edit') { const v = e.target.value; setTimeout(() => { if (M && M.mode === 'edit' && $('#gIn') && $('#gIn').value === v) addGenre(v); }, 120); } });
 
+/* ================= Выпадающие меню (статус игры, мой статус, оценка) ================= */
+// Капсула-кнопка [data-dd] открывает меню под собой. Закрытие — выбор, клик мимо, Esc, прокрутка.
+let dd = null; // { el, btn, kind }
+function closeDd() { if (dd) { dd.el.remove(); dd = null; } }
+function openDd(btn) {
+  closeDd();
+  const kind = btn.dataset.dd, g = M.mode === 'edit' ? M.draft : game();
+  let h;
+  if (kind === 'rating') {
+    h = '<div class="ddgrid">' + [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => `<button type="button" class="ddr ${g.rating === n ? 'on' : ''}" data-ddv="${n}" style="--c:${ratingColor(n)}">${n}</button>`).join('') + '</div>'
+      + `<button type="button" class="ddi ${g.rating == null ? 'on' : ''}" data-ddv="">— Без оценки</button>`;
+  } else {
+    const items = kind === 'game' ? GAME_STATUSES.map(x => [x, gsLabel(x)]) : [['', '—'], ...STATUS_KEYS.map(k => [k, flagName(k)])];
+    const cur = kind === 'game' ? g.gameStatus : mainOf(g);
+    h = items.map(([v, t]) => `<button type="button" class="ddi ${v === cur ? 'on' : ''}" data-ddv="${esc(v)}">${esc(t)}</button>`).join('');
+  }
+  const el = document.createElement('div');
+  el.className = 'ddpop' + (kind === 'rating' ? ' rate' : ''); el.innerHTML = h;
+  document.body.appendChild(el);
+  const r = btn.getBoundingClientRect(), w = el.offsetWidth, ht = el.offsetHeight;
+  const x = kind === 'rating' ? r.right - w : r.left;
+  let y = r.bottom + 6;
+  if (y + ht > innerHeight - 8) y = Math.max(8, r.top - ht - 6);
+  el.style.left = Math.max(8, Math.min(x, innerWidth - w - 8)) + 'px'; el.style.top = y + 'px';
+  el.addEventListener('click', e => { const b = e.target.closest('[data-ddv]'); if (b) pickDd(kind, b.dataset.ddv); });
+  dd = { el, btn, kind };
+}
+function applyDd(o, kind, v) {
+  if (kind === 'rating') o.rating = v ? +v : null;
+  else if (kind === 'game') o.gameStatus = v;
+  else setMain(o, v);
+}
+function pickDd(kind, v) {
+  closeDd(); if (!M) return;
+  if (M.mode === 'edit') { applyDd(M.draft, kind, v); return renderModal(); }
+  quickSave(o => applyDd(o, kind, v));
+}
+document.addEventListener('pointerdown', e => { if (dd && !dd.el.contains(e.target) && !dd.btn.contains(e.target)) closeDd(); }, true);
+document.addEventListener('scroll', e => { if (dd && !dd.el.contains(e.target)) closeDd(); }, true);
+// Быстрая правка в просмотре: меняем сразу, пишем через общую очередь записи (putGame); ошибка — тост и откат.
+function quickSave(fn) {
+  const g = game(); if (!g) return;
+  const prev = JSON.parse(JSON.stringify(g)), out = normalize(JSON.parse(JSON.stringify(g)));
+  fn(out);
+  const put = x => { const i = S.games.findIndex(y => y.id === x.id); if (i >= 0) S.games[i] = x; };
+  put(out); renderModal(); render();
+  putGame(out).then(sent => resyncIfStale(out.id, sent), e => {
+    toast('Не сохранилось: ' + errText(e));
+    if (S.games.find(y => y.id === out.id) === out) { put(prev); if (M && M.id === out.id && M.mode === 'read') renderModal(); render(); }
+  });
+}
+
 /* ================= Просмотр фото ================= */
-// На весь экран: ползунок 100–400 %, колесо мыши, при увеличении картинку можно таскать. Закрыть — ✕, клик по фону, Esc.
-let lb = null;
-async function openLightbox(src) {
-  if (!src) return;
-  if (isSb(src)) { src = await signedNow(src); if (!src) return toast('Не получилось открыть фото'); }
+// На весь экран: ползунок 50–300 % (по умолчанию 100 %), колесо мыши, при увеличении картинку можно таскать.
+// Стрелки ‹ › и клавиши ← → листают фото игры по кругу, масштаб при этом сбрасывается на 100 %. Фото одно — стрелок нет. Закрыть — ✕, клик по фону, Esc.
+let lb = null, lbNav = null;
+async function openLightbox(list, idx) {
+  list = (list || []).filter(Boolean); if (!list.length) return;
   closeLightbox();
+  const many = list.length > 1;
   lb = document.createElement('div'); lb.className = 'lb';
-  lb.innerHTML = `<div class="lbst"><img src="${esc(src)}" alt="" draggable="false"></div>
+  lb.innerHTML = `<div class="lbst"><img alt="" draggable="false"></div>
     <button class="btn icon lbx" title="Закрыть">${ic('x', '')}</button>
-    <div class="lbbar">Масштаб <input type="range" min="100" max="400" step="5" value="100"><b>100 %</b></div>`;
+    ${many ? `<button class="btn icon lbnav prev" title="Предыдущее (←)">${ic('back', '')}</button><button class="btn icon lbnav next" title="Следующее (→)">${ic('back', '')}</button>` : ''}
+    <div class="lbbar">Масштаб <input type="range" min="50" max="300" step="5" value="100"><b>100 %</b>${many ? '<span class="lbn"></span>' : ''}</div>`;
   document.body.appendChild(lb);
-  const st = lb.querySelector('.lbst'), img = st.querySelector('img'), rng = lb.querySelector('input'), out = lb.querySelector('b');
+  const me = lb, st = lb.querySelector('.lbst'), img = st.querySelector('img'), rng = lb.querySelector('input'), out = lb.querySelector('b'), num = lb.querySelector('.lbn');
   const Z = { s: 1, x: 0, y: 0 };
   const apply = () => {
-    const mx = img.offsetWidth * (Z.s - 1) / 2, my = img.offsetHeight * (Z.s - 1) / 2;
+    const mx = Math.max(0, img.offsetWidth * (Z.s - 1) / 2), my = Math.max(0, img.offsetHeight * (Z.s - 1) / 2);
     Z.x = Math.max(-mx, Math.min(mx, Z.x)); Z.y = Math.max(-my, Math.min(my, Z.y));
     img.style.transform = `translate(${Z.x}px, ${Z.y}px) scale(${Z.s})`;
     rng.value = Math.round(Z.s * 100); out.textContent = Math.round(Z.s * 100) + ' %';
     img.classList.toggle('zoomed', Z.s > 1);
   };
+  let cur = idx || 0, seq = 0;
+  const show = async i => {
+    cur = (i + list.length) % list.length; Z.s = 1; Z.x = 0; Z.y = 0; apply();
+    if (num) num.textContent = `${cur + 1} / ${list.length}`;
+    const my = ++seq; let src = list[cur];
+    if (isSb(src)) { src = await signedNow(src); if (my !== seq || lb !== me) return; if (!src) return toast('Не получилось открыть фото'); }
+    img.src = src;
+  };
+  lbNav = d => { if (many) show(cur + d); };
   rng.addEventListener('input', () => { Z.s = rng.value / 100; apply(); });
-  st.addEventListener('wheel', e => { e.preventDefault(); Z.s = Math.min(4, Math.max(1, Z.s * Math.pow(1.0015, -e.deltaY))); apply(); }, { passive: false });
+  st.addEventListener('wheel', e => { e.preventDefault(); Z.s = Math.min(3, Math.max(0.5, Z.s * Math.pow(1.0015, -e.deltaY))); apply(); }, { passive: false });
   img.addEventListener('pointerdown', e => {
     if (Z.s <= 1 || e.button !== 0) return;
     e.preventDefault(); img.setPointerCapture(e.pointerId); img.classList.add('dragging');
@@ -3608,12 +3895,16 @@ async function openLightbox(src) {
   st.addEventListener('click', e => { if (e.target === st) closeLightbox(); });
   lb.addEventListener('click', e => { if (e.target === lb) closeLightbox(); });
   lb.querySelector('.lbx').addEventListener('click', closeLightbox);
+  if (many) { lb.querySelector('.lbnav.prev').addEventListener('click', () => lbNav(-1)); lb.querySelector('.lbnav.next').addEventListener('click', () => lbNav(1)); }
+  await show(cur);
 }
-function closeLightbox() { if (lb) { lb.remove(); lb = null; } }
+function closeLightbox() { if (lb) { lb.remove(); lb = null; lbNav = null; } }
+document.addEventListener('keydown', e => { if (lb && lbNav && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) { e.preventDefault(); lbNav(e.key === 'ArrowLeft' ? -1 : 1); } });
 
 /* ================= События страницы ================= */
 document.addEventListener('keydown', e => {
   if (e.key !== 'Escape') return;
+  if (dd) return closeDd();
   if (lb) return closeLightbox();
   if (tpop) return closeThemePop();
   if (S.facetsOpen) return setFacetsOpen(false);
@@ -3626,13 +3917,12 @@ document.addEventListener('click', e => {
 let resizeT;
 window.addEventListener('resize', () => {
   if (tpop) placeTpop();
-  clearTimeout(resizeT); resizeT = setTimeout(() => { if (S.view === 'table' && S.user) render(); }, 120);
+  clearTimeout(resizeT); resizeT = setTimeout(() => { if (!S.user) return; if (S.view === 'table') render(); else { renderHeadTags(); document.documentElement.style.setProperty('--hdr-h', document.querySelector('.hdr').offsetHeight + 'px'); } }, 120);
 });
 // Прокрутка внутри самого меню его не закрывает — закрывает только прокрутка страницы.
 
 $('#viewSeg').addEventListener('click', e => { const b = e.target.closest('[data-view]'); if (!b) return; S.view = b.dataset.view; saveView(); render(); });
 $('#shapeSeg').addEventListener('click', e => { const b = e.target.closest('[data-shape]'); if (!b) return; S.shape = b.dataset.shape; saveView(); render(); });
-$('#logoutBtn').addEventListener('click', async () => { $('#logoutBtn').disabled = true; await sb.auth.signOut(); $('#logoutBtn').disabled = false; signedOut(); });
 $('#q').addEventListener('input', e => { S.q = e.target.value; render(); });
 $('#addBtn').addEventListener('click', openNew);
 $('#themeBtn').addEventListener('click', e => { e.stopPropagation(); openThemePop(); });
@@ -3650,10 +3940,11 @@ $('#loginForm').addEventListener('submit', async e => {
 });
 
 $('#facetBtn').addEventListener('click', () => setFacetsOpen(!S.facetsOpen));
+$('#htags').addEventListener('click', e => { const b = e.target.closest('[data-fg]'); if (b) toggleFacet(b.dataset.fg, b.dataset.fv); });
 $('#facets').addEventListener('click', e => {
   e.stopPropagation(); // панель перерисовывается — клик не должен считаться «мимо» и закрывать её на телефоне
   const b = e.target.closest('[data-fg]'); if (b) return toggleFacet(b.dataset.fg, b.dataset.fv);
-  if (e.target.closest('[data-freset]')) { S.facets = {}; saveView(); return render(); }
+  if (e.target.closest('[data-freset]')) { clearFacets(); saveView(); return render(); }
   if (e.target.closest('[data-fclose]')) setFacetsOpen(false);
 });
 // Перетаскивание края заголовка меняет ширину колонки
@@ -3681,7 +3972,7 @@ $('#list').addEventListener('click', e => {
   const a = e.target.closest('[data-act]');
   if (a && a.dataset.act === 'add') return openNew();
   if (a && a.dataset.act === 'reload') return loadGames();
-  if (a && a.dataset.act === 'clearall') { S.q = ''; $('#q').value = ''; S.facets = {}; saveView(); return render(); }
+  if (a && a.dataset.act === 'clearall') { S.q = ''; $('#q').value = ''; clearFacets(); saveView(); return render(); }
   const o = e.target.closest('[data-open]'); if (o) openGame(o.dataset.open);
 });
 
@@ -3694,7 +3985,7 @@ function signedIn(session) {
   S.user = session.user; loadGames();
 }
 function signedOut() {
-  S.user = null; S.games = []; S.load = 'idle'; S.loadErr = ''; SIGNED.clear();
+  S.user = null; S.games = []; S.load = 'idle'; S.loadErr = ''; [...SIGNED.keys()].forEach(k => { if (!JOBS.has(k)) SIGNED.delete(k); });
   render();
 }
 sb.auth.onAuthStateChange((ev, session) => { if (ev === 'SIGNED_OUT' || !session) { if (S.user) signedOut(); } });
